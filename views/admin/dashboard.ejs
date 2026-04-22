@@ -1,0 +1,57 @@
+<%- include('../partials/header') %>
+
+  <div class="page-header">
+    <h2>Dashboard</h2>
+    <a href="/admin/tournament/create" class="btn btn-primary">+ New Tournament</a>
+  </div>
+
+  <% if (tournaments.length===0) { %>
+    <div class="empty-state">
+      <p>No tournaments yet.</p>
+      <a href="/admin/tournament/create" class="btn btn-primary">Create your first one</a>
+    </div>
+    <% } else { %>
+      <div class="card-grid">
+        <% tournaments.forEach(t=> { %>
+          <div class="card">
+
+            <div class="card-header">
+              <h3>
+                <%= t.name %>
+              </h3>
+              <span class="badge <%= t.isOpen ? 'badge-open' : 'badge-closed' %>">
+                <%= t.isOpen ? 'Open' : 'Closed' %>
+              </span>
+            </div>
+
+            <div class="card-body">
+              <p>📅 <strong>
+                  <%= t.date %>
+                </strong> at <strong>
+                  <%= t.time %>
+                </strong></p>
+              <p>👥 <strong>
+                  <%= t.registrationCount %> / <%= t.maxTeams %>
+                </strong> teams</p>
+              <p class="slug-link">
+                🔗 /tournament/<strong>
+                  <%= t.slug %>
+                </strong>
+              </p>
+            </div>
+
+            <div class="card-actions">
+              <a href="/tournament/<%= t.slug %>" target="_blank" class="btn btn-sm btn-outline">View Link</a>
+              <a href="/admin/tournament/<%= t._id %>/participants" class="btn btn-sm btn-primary">Participants</a>
+              <form action="/admin/tournament/<%= t._id %>?_method=DELETE" method="POST"
+                onsubmit="return confirm('Delete this tournament and all its registrations?')">
+                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+              </form>
+            </div>
+
+          </div>
+          <% }) %>
+      </div>
+      <% } %>
+
+        <%- include('../partials/footer') %>

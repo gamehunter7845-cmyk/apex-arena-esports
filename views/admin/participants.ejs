@@ -1,0 +1,64 @@
+<%- include('../partials/header') %>
+
+  <div class="page-header">
+    <h2>
+      <%= tournament.name %>
+    </h2>
+    <a href="/admin/dashboard" class="btn btn-outline btn-sm">← Back</a>
+  </div>
+
+  <div class="tournament-meta">
+    <span>📅 <%= tournament.date %> at <%= tournament.time %></span>
+    <span>👥 <%= registrations.length %> / <%= tournament.maxTeams %> teams</span>
+    <span class="badge <%= tournament.isOpen ? 'badge-open' : 'badge-closed' %>">
+      <%= tournament.isOpen ? 'Registration Open' : 'Registration Closed' %>
+    </span>
+  </div>
+
+  <% if (registrations.length===0) { %>
+    <div class="empty-state">
+      <p>No participants yet.</p>
+    </div>
+    <% } else { %>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Team Name</th>
+              <th>IGN</th>
+              <th>WhatsApp</th>
+              <th>Registered At</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% registrations.forEach((r, i)=> { %>
+              <tr>
+                <td>
+                  <%= i + 1 %>
+                </td>
+                <td>
+                  <%= r.teamName %>
+                </td>
+                <td>
+                  <%= r.playerIGN %>
+                </td>
+                <td><a href="https://wa.me/91<%= r.whatsappNumber %>" target="_blank" class="wa-link">📱 <%= r.whatsappNumber %></a></td>
+                <td>
+                  <%= new Date(r.createdAt).toLocaleString('en-IN', { dateStyle: 'medium' , timeStyle: 'short' }) %>
+                </td>
+                <td>
+                  <form action="/admin/registration/<%= r._id %>?_method=DELETE" method="POST"
+                    onsubmit="return confirm('Remove this participant?')">
+                    <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                  </form>
+                </td>
+              </tr>
+              <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <% } %>
+
+        <%- include('../partials/footer') %>

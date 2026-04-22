@@ -1,0 +1,474 @@
+<%- include('../partials/header') %>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #080a0f;
+    --surface: #0d1117;
+    --border: #1e2a3a;
+    --accent: #00e5ff;
+    --accent2: #ff4500;
+    --green: #22c55e;
+    --text: #c9d6e3;
+    --muted: #4a5a70;
+    --glow: 0 0 20px rgba(0, 229, 255, 0.3);
+    --glow-green: 0 0 20px rgba(34, 197, 94, 0.3);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Rajdhani', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  .suc-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .suc-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+  }
+  .suc-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(34,197,94,0.05) 0%, transparent 70%);
+  }
+  @keyframes gridMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(50px); }
+  }
+
+  /* Scanline */
+  .suc-scan {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--green), transparent);
+    animation: scan 4s ease-in-out infinite;
+    opacity: 0.35;
+    z-index: 1;
+    pointer-events: none;
+  }
+  @keyframes scan {
+    0% { top: 0; }
+    100% { top: 100vh; }
+  }
+
+  /* Corner brackets */
+  .suc-corner {
+    position: fixed;
+    width: 60px; height: 60px;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .suc-corner--tl { top: 16px; left: 16px; border-top: 2px solid var(--green); border-left: 2px solid var(--green); }
+  .suc-corner--tr { top: 16px; right: 16px; border-top: 2px solid var(--green); border-right: 2px solid var(--green); }
+  .suc-corner--bl { bottom: 16px; left: 16px; border-bottom: 2px solid var(--green); border-left: 2px solid var(--green); }
+  .suc-corner--br { bottom: 16px; right: 16px; border-bottom: 2px solid var(--green); border-right: 2px solid var(--green); }
+
+  /* Page wrapper */
+  .suc-page {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 20px 64px;
+  }
+
+  /* ── CARD ── */
+  .suc-card {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 48px 42px;
+    clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+    animation: fadeUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .suc-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(34,197,94,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .suc-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--green) 40%, var(--accent) 60%, transparent);
+  }
+
+  /* ── HEADER ── */
+  .suc-header {
+    text-align: center;
+    margin-bottom: 36px;
+    animation: fadeUp 0.5s 0.1s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  /* Animated checkmark ring */
+  .suc-icon-wrap {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+  }
+  .suc-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid var(--green);
+    animation: ringPulse 2.5s ease-in-out infinite;
+    box-shadow: 0 0 0 0 rgba(34,197,94,0.4);
+  }
+  .suc-ring-2 {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid rgba(34,197,94,0.2);
+    animation: ringPulse 2.5s 0.4s ease-in-out infinite;
+  }
+  @keyframes ringPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.05); }
+  }
+  .suc-check {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+  }
+
+  .suc-eyebrow {
+    display: inline-block;
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--green);
+    border: 1px solid rgba(34,197,94,0.3);
+    padding: 4px 14px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    position: relative;
+  }
+  .suc-eyebrow::before, .suc-eyebrow::after {
+    content: '';
+    position: absolute;
+    top: 50%; width: 18px; height: 1px;
+    background: rgba(34,197,94,0.3);
+  }
+  .suc-eyebrow::before { right: calc(100% + 8px); }
+  .suc-eyebrow::after  { left:  calc(100% + 8px); }
+
+  .suc-header h2 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(16px, 4vw, 22px);
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .suc-welcome {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+  .suc-welcome strong {
+    color: var(--accent);
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+  }
+
+  /* ── INFO CARD ── */
+  .suc-info {
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent);
+    background: rgba(255,255,255,0.015);
+    margin-bottom: 20px;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+    animation: fadeUp 0.5s 0.2s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  .suc-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .suc-row:last-child { border-bottom: none; }
+
+  .suc-info-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .suc-info-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.5px;
+    text-align: right;
+  }
+
+  /* Password highlight */
+  .suc-info-value.highlight {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 4px;
+    text-shadow: 0 0 16px rgba(34,197,94,0.4);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+  .suc-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: var(--green);
+    padding: 3px 8px;
+    font-family: 'Orbitron', monospace;
+    font-size: 7px;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    vertical-align: middle;
+  }
+  .suc-copy-btn:hover {
+    background: rgba(34,197,94,0.2);
+    box-shadow: 0 0 10px rgba(34,197,94,0.2);
+  }
+  .suc-copy-btn.copied {
+    color: #fff;
+    background: var(--green);
+  }
+
+  /* ── NOTICE ── */
+  .suc-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(255, 167, 0, 0.05);
+    border: 1px solid rgba(255,167,0,0.2);
+    border-left: 2px solid #ffa700;
+    padding: 14px 16px;
+    margin-bottom: 24px;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+    animation: fadeUp 0.5s 0.3s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .suc-notice-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .suc-notice-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffa700;
+    letter-spacing: 0.5px;
+    line-height: 1.5;
+  }
+  .suc-notice-text strong {
+    color: #fff;
+  }
+
+  /* ── WHATSAPP BUTTON ── */
+  .suc-btn-wrap {
+    animation: fadeUp 0.5s 0.4s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .suc-wa-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, rgba(37,211,102,0.15) 0%, rgba(37,211,102,0.05) 100%);
+    border: 1px solid #25d366;
+    color: #25d366;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .suc-wa-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #25d366, rgba(37,211,102,0.6));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .suc-wa-btn:hover {
+    color: #000;
+    box-shadow: 0 0 30px rgba(37,211,102,0.35);
+    letter-spacing: 4px;
+  }
+  .suc-wa-btn:hover::before { opacity: 1; }
+  .suc-wa-icon {
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s;
+  }
+  .suc-wa-btn:hover .suc-wa-icon { transform: scale(1.15); }
+  .suc-wa-label { position: relative; z-index: 1; }
+
+  /* Divider */
+  .suc-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0;
+    color: var(--muted);
+    font-size: 9px;
+    letter-spacing: 2px;
+    font-family: 'Orbitron', monospace;
+    animation: fadeUp 0.5s 0.35s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .suc-divider::before, .suc-divider::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border));
+  }
+  .suc-divider::after { background: linear-gradient(270deg, transparent, var(--border)); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    .suc-card { padding: 32px 22px; }
+    .suc-row { flex-direction: column; gap: 4px; }
+    .suc-info-value { text-align: left; }
+  }
+</style>
+
+<!-- Background -->
+<div class="suc-bg"></div>
+<div class="suc-scan"></div>
+<div class="suc-corner suc-corner--tl"></div>
+<div class="suc-corner suc-corner--tr"></div>
+<div class="suc-corner suc-corner--bl"></div>
+<div class="suc-corner suc-corner--br"></div>
+
+<div class="suc-page">
+  <div class="suc-card">
+
+    <!-- Header -->
+    <div class="suc-header">
+      <div class="suc-icon-wrap">
+        <div class="suc-ring"></div>
+        <div class="suc-ring-2"></div>
+        <div class="suc-check">✅</div>
+      </div>
+      <div class="suc-eyebrow">Squad Enlisted</div>
+      <h2>Registration Successful</h2>
+      <p class="suc-welcome">Welcome, <strong><%= teamName %></strong></p>
+    </div>
+
+    <!-- Info rows -->
+    <div class="suc-info">
+      <div class="suc-row">
+        <span class="suc-info-label">Tournament</span>
+        <span class="suc-info-value"><%= tournament.name %></span>
+      </div>
+      <div class="suc-row">
+        <span class="suc-info-label">Date & Time</span>
+        <span class="suc-info-value"><%= tournament.date %> · <%= new Date(`1970-01-01T${tournament.time}`).toLocaleTimeString('en-IN', {hour: 'numeric',minute: '2-digit',hour12: true}) %></span>
+      </div>
+      <div class="suc-row">
+        <span class="suc-info-label">Room Password</span>
+        <span class="suc-info-value highlight" id="roomPass">
+          <%= tournament.roomPassword %>
+          <button class="suc-copy-btn" onclick="copyPass()" id="copyBtn">COPY</button>
+        </span>
+      </div>
+    </div>
+
+    <!-- Notice -->
+    <div class="suc-notice">
+      <span class="suc-notice-icon">📢</span>
+      <p class="suc-notice-text">
+        Room ID will be shared <strong>5 minutes before</strong> the match in the WhatsApp channel.
+      </p>
+    </div>
+
+    <div class="suc-divider">next step</div>
+
+    <!-- WhatsApp button -->
+    <div class="suc-btn-wrap">
+      <a href="<%= tournament.whatsappLink %>" target="_blank" class="suc-wa-btn">
+        <svg class="suc-wa-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        <span class="suc-wa-label">Join WhatsApp Channel</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function copyPass() {
+    const pass = '<%= tournament.roomPassword %>';
+    navigator.clipboard.writeText(pass).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = '✓ COPIED';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'COPY';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+</script>
+
+<%- include('../partials/footer') %>

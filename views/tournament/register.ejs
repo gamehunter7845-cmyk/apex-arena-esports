@@ -1,0 +1,704 @@
+<%- include('../partials/header') %>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #080a0f;
+    --surface: #0d1117;
+    --border: #1e2a3a;
+    --accent: #00e5ff;
+    --accent2: #ff4500;
+    --text: #c9d6e3;
+    --muted: #4a5a70;
+    --green: #22c55e;
+    --red: #ef4444;
+    --glow: 0 0 20px rgba(0, 229, 255, 0.3);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Rajdhani', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Animated grid */
+  .treg-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .treg-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+  }
+  .treg-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(0,229,255,0.05) 0%, transparent 70%);
+  }
+  @keyframes gridMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(50px); }
+  }
+
+  /* Scanline */
+  .treg-scan {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: scan 4s ease-in-out infinite;
+    opacity: 0.35;
+    z-index: 1;
+    pointer-events: none;
+  }
+  @keyframes scan {
+    0% { top: 0; }
+    100% { top: 100vh; }
+  }
+
+  /* Corner brackets */
+  .treg-corner {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .treg-corner--tl { top: 16px; left: 16px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+  .treg-corner--tr { top: 16px; right: 16px; border-top: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+  .treg-corner--bl { bottom: 16px; left: 16px; border-bottom: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+  .treg-corner--br { bottom: 16px; right: 16px; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+
+  /* Page wrapper */
+  .treg-page {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 20px 64px;
+  }
+
+  /* ─── HERO ─────────────────────────────── */
+  .treg-hero {
+    text-align: center;
+    max-width: 640px;
+    width: 100%;
+    margin-bottom: 36px;
+    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .treg-hero-eyebrow {
+    display: inline-block;
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--accent);
+    border: 1px solid rgba(0,229,255,0.3);
+    padding: 4px 14px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    position: relative;
+  }
+  .treg-hero-eyebrow::before,
+  .treg-hero-eyebrow::after {
+    content: '';
+    position: absolute;
+    top: 50%; width: 20px; height: 1px;
+    background: rgba(0,229,255,0.3);
+  }
+  .treg-hero-eyebrow::before { right: calc(100% + 8px); }
+  .treg-hero-eyebrow::after  { left:  calc(100% + 8px); }
+
+  .treg-hero h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(22px, 5vw, 36px);
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+
+  .treg-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .treg-meta-sep {
+    width: 4px; height: 4px;
+    background: var(--muted);
+    border-radius: 50%;
+    opacity: 0.5;
+  }
+  .treg-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .treg-meta-icon {
+    color: var(--accent);
+    font-size: 13px;
+  }
+
+  /* Status badge */
+  .treg-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border: 1px solid;
+  }
+  .treg-status.open {
+    color: var(--green);
+    border-color: rgba(34,197,94,0.4);
+    background: rgba(34,197,94,0.06);
+  }
+  .treg-status.closed {
+    color: var(--red);
+    border-color: rgba(239,68,68,0.4);
+    background: rgba(239,68,68,0.06);
+  }
+  .treg-status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .open  .treg-status-dot { background: var(--green); box-shadow: 0 0 8px var(--green); animation: blink 2s infinite; }
+  .closed .treg-status-dot { background: var(--red); }
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+  /* ─── ALERT ─────────────────────────────── */
+  .treg-alert {
+    max-width: 520px;
+    width: 100%;
+    padding: 14px 20px;
+    margin-bottom: 28px;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-left: 3px solid;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+    animation: fadeUp 0.5s 0.1s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .treg-alert.error {
+    background: rgba(239,68,68,0.06);
+    border-color: var(--red);
+    color: var(--red);
+  }
+
+  /* ─── CARD ─────────────────────────────── */
+  .treg-card {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 44px 40px;
+    clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+    animation: fadeUp 0.6s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .treg-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,229,255,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .treg-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent) 40%, var(--accent2) 60%, transparent);
+  }
+
+  /* Closed state card */
+  .treg-closed-card {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    background: var(--surface);
+    border: 1px solid rgba(239,68,68,0.25);
+    padding: 44px 40px;
+    text-align: center;
+    clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+    animation: fadeUp 0.6s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .treg-closed-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--red) 50%, transparent);
+  }
+  .treg-closed-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .treg-closed-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--red);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .treg-closed-sub {
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+
+  /* Card heading */
+  .treg-card-head {
+    margin-bottom: 32px;
+  }
+  .treg-card-head h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #fff;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .treg-card-head h3::before {
+    content: '';
+    width: 16px; height: 2px;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+  .treg-card-divider {
+    margin-top: 14px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  /* Form groups */
+  .treg-group {
+    margin-bottom: 22px;
+  }
+  .treg-group:nth-child(1) { animation: fadeUp 0.5s 0.25s cubic-bezier(0.16,1,0.3,1) both; }
+  .treg-group:nth-child(2) { animation: fadeUp 0.5s 0.32s cubic-bezier(0.16,1,0.3,1) both; }
+  .treg-group:nth-child(3) { animation: fadeUp 0.5s 0.39s cubic-bezier(0.16,1,0.3,1) both; }
+
+  .treg-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .treg-label::before {
+    content: '';
+    width: 12px; height: 1px;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .treg-input-wrap {
+    position: relative;
+  }
+
+  .treg-input {
+    width: 100%;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent);
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 14px 42px 14px 18px;
+    outline: none;
+    transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+    width: 100%;
+  }
+  .treg-input::placeholder {
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+  .treg-input:focus {
+    border-color: var(--accent);
+    background: rgba(0,229,255,0.04);
+    box-shadow: var(--glow), inset 0 0 20px rgba(0,229,255,0.02);
+  }
+  .treg-input:focus + .treg-dot {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+
+  .treg-dot {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%) scale(0);
+    opacity: 0;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    transition: all 0.2s;
+    pointer-events: none;
+  }
+
+  /* Phone prefix input */
+  .treg-phone-wrap {
+    display: flex;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+  }
+  .treg-prefix {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    background: rgba(0,229,255,0.06);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent);
+    border-right: none;
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+  .treg-phone-input {
+    flex: 1;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-left: 1px solid rgba(0,229,255,0.2);
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    padding: 14px 42px 14px 14px;
+    outline: none;
+    transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+    width: 100%;
+    clip-path: none;
+  }
+  .treg-phone-input::placeholder {
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+  .treg-phone-input:focus {
+    border-color: var(--accent);
+    background: rgba(0,229,255,0.04);
+    box-shadow: var(--glow);
+  }
+
+  /* Divider */
+  .treg-form-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 28px 0;
+    color: var(--muted);
+    font-size: 9px;
+    letter-spacing: 2px;
+    font-family: 'Orbitron', monospace;
+    animation: fadeUp 0.5s 0.44s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .treg-form-divider::before,
+  .treg-form-divider::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border));
+  }
+  .treg-form-divider::after {
+    background: linear-gradient(270deg, transparent, var(--border));
+  }
+
+  /* Submit button */
+  .treg-btn-wrap {
+    animation: fadeUp 0.5s 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .treg-btn {
+    width: 100%;
+    position: relative;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: 'Orbitron', monospace;
+  }
+  .treg-btn-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, rgba(0,229,255,0.15) 0%, rgba(0,229,255,0.05) 100%);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    position: relative;
+    z-index: 1;
+  }
+  .treg-btn-inner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--accent), rgba(0,229,255,0.6));
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: -1;
+  }
+  .treg-btn:hover .treg-btn-inner {
+    color: #000;
+    box-shadow: 0 0 30px rgba(0,229,255,0.4);
+    letter-spacing: 5px;
+  }
+  .treg-btn:hover .treg-btn-inner::before { opacity: 1; }
+  .treg-btn:active .treg-btn-inner { transform: scale(0.98); }
+  .treg-btn-arrow { transition: transform 0.3s; }
+  .treg-btn:hover .treg-btn-arrow { transform: translateX(4px); }
+
+  /* Footer stats */
+  .treg-stats {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 28px;
+    animation: fadeUp 0.5s 0.55s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .treg-stat { text-align: center; }
+  .treg-stat-val {
+    font-family: 'Orbitron', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .treg-stat-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .treg-stat-sep {
+    width: 1px;
+    background: var(--border);
+    align-self: stretch;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    .treg-card, .treg-closed-card { padding: 32px 24px; }
+    .treg-hero h1 { font-size: 20px; }
+  }
+</style>
+
+<!-- Background layers -->
+<div class="treg-bg"></div>
+<div class="treg-scan"></div>
+<div class="treg-corner treg-corner--tl"></div>
+<div class="treg-corner treg-corner--tr"></div>
+<div class="treg-corner treg-corner--bl"></div>
+<div class="treg-corner treg-corner--br"></div>
+
+<div class="treg-page">
+
+  <!-- ── HERO ── -->
+  <div class="treg-hero">
+    <div class="treg-hero-eyebrow">Active Tournament</div>
+    <h1><%= tournament.name %></h1>
+
+    <div class="treg-meta">
+      <div class="treg-meta-item">
+        <span class="treg-meta-icon">▸</span>
+        <%= tournament.date %>
+      </div>
+      <div class="treg-meta-sep"></div>
+      <div class="treg-meta-item">
+        <span class="treg-meta-icon">◷</span>
+        <%= tournament.time %>
+      </div>
+    </div>
+
+    <% if (tournament.isOpen) { %>
+      <div class="treg-status open">
+        <span class="treg-status-dot"></span>
+        Registration Open
+      </div>
+    <% } else { %>
+      <div class="treg-status closed">
+        <span class="treg-status-dot"></span>
+        Registration Closed
+      </div>
+    <% } %>
+  </div>
+
+  <!-- ── CLOSED STATE ── -->
+  <% if (!tournament.isOpen) { %>
+    <div class="treg-closed-card">
+      <span class="treg-closed-icon">🔒</span>
+      <div class="treg-closed-title">Access Denied</div>
+      <p class="treg-closed-sub">Registration for this tournament is closed.<br>Check back for future events.</p>
+    </div>
+
+  <!-- ── OPEN STATE ── -->
+  <% } else { %>
+
+    <% if (locals.error) { %>
+      <div class="treg-alert error">⚠ &nbsp;<%= error %></div>
+    <% } %>
+
+    <div class="treg-card">
+
+      <div class="treg-card-head">
+        <h3>Register Your Team</h3>
+        <div class="treg-card-divider"></div>
+      </div>
+
+      <form action="/tournament/<%= tournament.slug %>/register" method="POST">
+
+        <div class="treg-group">
+          <label class="treg-label" for="teamName">Team Identifier</label>
+          <div class="treg-input-wrap">
+            <input
+              class="treg-input"
+              type="text"
+              id="teamName"
+              name="teamName"
+              placeholder="e.g. Team Phoenix"
+              required
+            />
+            <span class="treg-dot"></span>
+          </div>
+        </div>
+
+        <div class="treg-group">
+          <label class="treg-label" for="playerIGN">Player IGN</label>
+          <div class="treg-input-wrap">
+            <input
+              class="treg-input"
+              type="text"
+              id="playerIGN"
+              name="playerIGN"
+              placeholder="e.g. PhoenixGG"
+              required
+            />
+            <span class="treg-dot"></span>
+          </div>
+        </div>
+
+        <div class="treg-group">
+          <label class="treg-label" for="whatsappNumber">WhatsApp Contact</label>
+          <div class="treg-input-wrap">
+            <div class="treg-phone-wrap">
+              <span class="treg-prefix">+91</span>
+              <input
+                class="treg-phone-input"
+                type="tel"
+                id="whatsappNumber"
+                name="whatsappNumber"
+                placeholder="9876543210"
+                pattern="[0-9]{10}"
+                maxlength="10"
+                required
+              />
+            </div>
+            <span class="treg-dot" style="right:14px;"></span>
+          </div>
+        </div>
+
+        <div class="treg-form-divider">confirm squad</div>
+
+        <div class="treg-btn-wrap">
+          <button type="submit" class="treg-btn">
+            <div class="treg-btn-inner">
+              Deploy Registration
+              <svg class="treg-btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </button>
+        </div>
+
+      </form>
+
+      <div class="treg-stats">
+        <div class="treg-stat">
+          <div class="treg-stat-val">32</div>
+          <div class="treg-stat-label">Max Slots</div>
+        </div>
+        <div class="treg-stat-sep"></div>
+        <div class="treg-stat">
+          <div class="treg-stat-val">4v4</div>
+          <div class="treg-stat-label">Format</div>
+        </div>
+        <div class="treg-stat-sep"></div>
+        <div class="treg-stat">
+          <div class="treg-stat-val">FREE</div>
+          <div class="treg-stat-label">Entry</div>
+        </div>
+      </div>
+
+    </div>
+  <% } %>
+
+</div>
+
+<%- include('../partials/footer') %>
